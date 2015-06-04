@@ -7,7 +7,7 @@ function drawimg(img){
     var mycv = document.getElementById("canvas");            //js原生方法获取id=canvas的元素
     var myctx = mycv.getContext("2d");                       //canvas方法
     var nWidth, nHeight;                                     //添加获得图像高度和宽度， bylele2007,2015.6.3
-    if (img.naturalWidth) { // 现代浏览器
+    if (img.naturalWidth) {     // 现代浏览器
         nWidth = img.naturalWidth;
         nHeight = img.naturalHeight;
     }
@@ -40,10 +40,14 @@ function insertPic(picSrc){
 
 function fileSelect() {
     var files = this.files; //this代表触发当前函数的元素，此处为id=file1的元素。this.files为input[type=file]对象的内置方法，获取选中的文件（可多选）。
-    //if(!/image\/\w+/.test(file.type)){                  // 判断图片的类型， bylele2007,2015.6.3
-    //    alert("文件必须为图片！");
-    //    return false;
-    //}
+
+    //判断是否是图片 -strFilter 必须小写
+   if(isPicture(this) == false)
+   {
+       window.alert('请选择图片文件！');
+       return;
+   }
+
     for(var i = 0, f; f = files[i]; i++) {              //遍历选中的文件
         var reader = new FileReader();                  //html5新技术，具体看文档。实例化一个FileReader对象。
         reader.onload = function() {
@@ -54,10 +58,22 @@ function fileSelect() {
         reader.readAsDataURL(f);                        //读取文件内容，并触发reader的onload事件
     }
 }
-
 //TODO: 限制每次只能打开一张
 //TODO: 图片打开后大小没有适配
 //TODO: 文件格式判断，只能是图片
+function isPicture(files){
+    var name = files.value;
+    var strFilter = ".jpeg|.gif|.jpg|.bmp|.pic|";
+    if (name.indexOf(".") > -1) {
+        var p = name.lastIndexOf(".");
+        var strPostfix = name.substring(p, name.length) + '|';
+        strPostfix = strPostfix.toLowerCase();
+        var judge = strFilter.indexOf(strPostfix);
+        return judge>-1;
+
+    }
+}
+
 $(function() {                               //jquery domready，元素加载完成
     $("#file1").on("change", fileSelect);   //jquery 监听id=file1元素的change事件，如果该元素的值被改变，触发fileSelect函数。
 });
